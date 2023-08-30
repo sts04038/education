@@ -74,3 +74,42 @@
         </div>
     {% endwith %}
 {% endblock %}
+{% block include_js %}
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html5sortable/0.13.3/html5sortable.min.js"></script>
+{% endblock %}
+<script>
+    {% block domready %}
+        const options = {
+            method: 'POST',
+            mode: 'same-origin'
+        };
+        const moduleOrderUrl = '{% url "module_order" %}';
+        sortable('#modules', {
+            forcePlaceholderSize: true,
+            placeholderClass: 'placeholder'
+        })[0].addEventListener('sortupdate', function (e) {
+            const modulesOrder = {};
+            const modules = document.querySelectorAll('#modules li');
+            modules.forEach(function (module, index) {
+                modulesOrder[module.dataset.id] = index;
+                module.querySelector('.order').innerHTML = index + 1;
+            });
+            options['body'] = JSON.stringify(modulesOrder);
+            fetch(moduleOrderUrl, options);
+        });
+
+        const contentOrderUrl = '{% url "content_order" %}';
+        sortable('#module-contents', {
+            forcePlaceholderSize: true,
+            placeholderClass: 'placeholder'
+        })[0].addEventListener('sortupdate', function (e) {
+            const contentOrder = {};
+            const contents = document.querySelectorAll('#module-contents div');
+            contents.forEach(function (content, index) {
+                contentOrder[content.dataset.id] = index;
+            });
+            options['body'] = JSON.stringify(contentOrder);
+            fetch(contentOrderUrl, options);
+        });
+    {% endblock %}
+</script>
