@@ -167,7 +167,7 @@ class CourseListView(TemplateResponseMixin, View):
             key = f'subject_{subject.id}_courses'
             courses = cache.get(key)
             if not courses:
-                courses = courses.filter(subject=subject)
+                courses = all_courses.filter(subject=subject)
                 cache.set(key, courses)
         else:
             subject = None
